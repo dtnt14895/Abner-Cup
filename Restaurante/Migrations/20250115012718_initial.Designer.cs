@@ -12,8 +12,8 @@ using Restaurante;
 namespace Restaurante.Migrations
 {
     [DbContext(typeof(Db))]
-    [Migration("20250114020248_modelos")]
-    partial class modelos
+    [Migration("20250115012718_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,11 +27,11 @@ namespace Restaurante.Migrations
 
             modelBuilder.Entity("Restaurante.Models.Cliente", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ClienteId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ClienteId"));
 
                     b.Property<string>("Apellido")
                         .IsRequired()
@@ -53,18 +53,18 @@ namespace Restaurante.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("ClienteId");
 
                     b.ToTable("Clientes");
                 });
 
             modelBuilder.Entity("Restaurante.Models.Detalle_Venta", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("DetalleVentaId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("DetalleVentaId"));
 
                     b.Property<int>("Cantidad")
                         .HasColumnType("integer");
@@ -78,18 +78,22 @@ namespace Restaurante.Migrations
                     b.Property<int>("VentaId")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("DetalleVentaId");
+
+                    b.HasIndex("ProductoId");
+
+                    b.HasIndex("VentaId");
 
                     b.ToTable("Detalle_Ventas");
                 });
 
             modelBuilder.Entity("Restaurante.Models.Producto", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ProductoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProductoId"));
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
@@ -106,18 +110,18 @@ namespace Restaurante.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("ProductoId");
 
                     b.ToTable("Productos");
                 });
 
             modelBuilder.Entity("Restaurante.Models.Venta", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("VentaId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VentaId"));
 
                     b.Property<int>("ClienteId")
                         .HasColumnType("integer");
@@ -128,9 +132,46 @@ namespace Restaurante.Migrations
                     b.Property<decimal>("Total")
                         .HasColumnType("numeric");
 
-                    b.HasKey("Id");
+                    b.HasKey("VentaId");
+
+                    b.HasIndex("ClienteId");
 
                     b.ToTable("Ventas");
+                });
+
+            modelBuilder.Entity("Restaurante.Models.Detalle_Venta", b =>
+                {
+                    b.HasOne("Restaurante.Models.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Restaurante.Models.Venta", "Venta")
+                        .WithMany()
+                        .HasForeignKey("VentaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
+
+                    b.Navigation("Venta");
+                });
+
+            modelBuilder.Entity("Restaurante.Models.Venta", b =>
+                {
+                    b.HasOne("Restaurante.Models.Cliente", "Cliente")
+                        .WithMany("Ventas")
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cliente");
+                });
+
+            modelBuilder.Entity("Restaurante.Models.Cliente", b =>
+                {
+                    b.Navigation("Ventas");
                 });
 #pragma warning restore 612, 618
         }

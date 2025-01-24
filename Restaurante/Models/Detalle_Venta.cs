@@ -7,16 +7,12 @@ namespace Restaurante.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-        [Required]
-        [ForeignKey("Id")]
+        public int DetalleVentaId { get; set; }
         public int VentaId { get; set; }
-        [Required]
-        [ForeignKey("Id")]
         public int ProductoId { get; set; }
-        [Required]
         public int Cantidad { get; set; }
-        [Required]
         public decimal Total { get; set; }
+        public virtual Venta Venta { get; set; }
+        public virtual Producto Producto { get; set; }
     }
 }
